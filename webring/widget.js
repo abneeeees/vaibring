@@ -1,0 +1,224 @@
+/**
+ * vaibring — embeddable webring widget
+ *
+ * Usage:
+ *   <script
+ *     src="https://v8v88v8v88.github.io/vaibring/webring/widget.js"
+ *     data-ring="https://v8v88v8v88.github.io/vaibring/webring/sites.json"
+ *     data-theme="retro"          <!-- optional: "retro" | "dark" | omit for light -->
+ *     data-label="vaibring"       <!-- optional: custom ring name -->
+ *     async
+ *   ></script>
+ *
+ * The script auto-injects the widget next to the <script> tag.
+ * It fetches the ring data, finds the current site, and renders
+ * ← prev | random | next → navigation links.
+ */
+
+;(function () {
+  'use strict'
+
+  // ── Configuration ──────────────────────────────────────────
+
+  const SCRIPT = document.currentScript
+  if (!SCRIPT) return // Edge case: module context or removed script
+
+  const RING_URL =
+    SCRIPT.getAttribute('data-ring') ||
+    'https://v8v88v8v88.github.io/vaibring/webring/sites.json'
+
+  const THEME = SCRIPT.getAttribute('data-theme') || ''
+  const LABEL = SCRIPT.getAttribute('data-label') || 'vaibring'
+  const HUB_URL = SCRIPT.getAttribute('data-hub') || 'https://v8v88v8v88.github.io/vaibring'
+
+  // ── Inject CSS (once) ──────────────────────────────────────
+
+  const CSS_ID = 'vaibring-css'
+  if (!document.getElementById(CSS_ID)) {
+    const cssUrl = RING_URL.replace(/sites\.json$/, 'widget.css')
+    const link = document.createElement('link')
+    link.id = CSS_ID
+    link.rel = 'stylesheet'
+    link.href = cssUrl
+    document.head.appendChild(link)
+  }
+
+  // ── Build container ────────────────────────────────────────
+
+  const widget = document.createElement('div')
+  widget.className = 'vaibring-widget'
+  widget.setAttribute('role', 'navigation')
+  widget.setAttribute('aria-label', LABEL + ' webring')
+  if (THEME) widget.setAttribute('data-theme', THEME)
+  widget.setAttribute('data-state', 'loading')
+  widget.textContent = '⟳ loading ring…'
+  SCRIPT.parentNode.insertBefore(widget, SCRIPT)
+
+  // ── Helpers ────────────────────────────────────────────────
+
+  /**
+   * Normalise a URL for comparison: strip protocol, trailing slash,
+   * www prefix, and lowercase.
+   */
+  function normalise(url) {
+    try {
+      const u = new URL(url)
+      return (u.host.replace(/^www\./, '') + u.pathname)
+        .toLowerCase()
+        .replace(/\/+$/, '')
+    } catch {
+      return url.toLowerCase().replace(/\/+$/, '')
+    }
+  }
+
+  /**
+   * Find the index of the current page's site in the ring.
+   * Returns -1 if not found.
+   */
+  function findCurrent(sites) {
+    const here = normalise(window.location.href)
+    // Try exact host+path match first, then host-only match
+    let idx = sites.findIndex((s) => normalise(s.url) === here)
+    if (idx === -1) {
+      const hereHost = new URL(window.location.href).host.replace(/^www\./, '').toLowerCase()
+      idx = sites.findIndex((s) => {
+        try {
+          return new URL(s.url).host.replace(/^www\./, '').toLowerCase() === hereHost
+        } catch {
+          return false
+        }
+      })
+    }
+    return idx
+  }
+
+  /**
+   * Get a random index that is NOT the current index.
+   */
+  function randomIndex(len, exclude) {
+    if (len <= 1) return 0
+    let r
+    do { r = Math.floor(Math.random() * len) } while (r === exclude)
+    return r
+  }
+
+  /**
+   * Create a small globe SVG icon.
+   */
+  function makeGlobe() {
+    var ns = 'http://www.w3.org/2000/svg'
+    var svg = document.createElementNS(ns, 'svg')
+    svg.setAttribute('viewBox', '0 0 24 24')
+    svg.setAttribute('width', '14')
+    svg.setAttribute('height', '14')
+    svg.setAttribute('aria-hidden', 'true')
+    svg.style.cssText = 'display:inline-block;vertical-align:-2px;margin-right:4px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round'
+    svg.innerHTML = '<circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4" ry="10"/><line x1="2" y1="12" x2="22" y2="12"/>'
+    return svg
+  }
+
+  /**
+   * Create a link element.
+   */
+  function makeLink(href, text, title) {
+    const a = document.createElement('a')
+    a.href = href
+    a.textContent = text
+    if (title) a.title = title
+    a.rel = 'noopener'
+    return a
+  }
+
+  /**
+   * Create a label link with globe icon.
+   */
+  function makeLabelLink(href, text) {
+    const a = document.createElement('a')
+    a.href = href
+    a.appendChild(makeGlobe())
+    a.appendChild(document.createTextNode(text))
+    a.rel = 'noopener'
+    return a
+  }
+
+  function makeSep() {
+    const span = document.createElement('span')
+    span.className = 'vaibring-sep'
+    span.textContent = '|'
+    span.setAttribute('aria-hidden', 'true')
+    return span
+  }
+
+  // ── Render ─────────────────────────────────────────────────
+
+  function render(sites) {
+    widget.textContent = ''
+    widget.removeAttribute('data-state')
+
+    if (!sites || sites.length === 0) {
+      widget.setAttribute('data-state', 'error')
+      widget.textContent = 'ring is empty'
+      return
+    }
+
+    const idx = findCurrent(sites)
+    const len = sites.length
+
+    // If current site not in ring, show a "join" state
+    if (idx === -1) {
+      const prevIdx = 0
+      const nextIdx = len > 1 ? 1 : 0
+      const randIdx = randomIndex(len, -1)
+
+      const label = document.createElement('span')
+      label.className = 'vaibring-label'
+      label.appendChild(makeLabelLink(HUB_URL, LABEL))
+
+      widget.appendChild(label)
+      widget.appendChild(makeSep())
+      widget.appendChild(makeLink(sites[prevIdx].url, '← prev', sites[prevIdx].name))
+      widget.appendChild(makeSep())
+      widget.appendChild(makeLink(sites[randIdx].url, 'random', 'Visit a random site'))
+      widget.appendChild(makeSep())
+      widget.appendChild(makeLink(sites[nextIdx].url, 'next →', sites[nextIdx].name))
+      return
+    }
+
+    const prevIdx = (idx - 1 + len) % len
+    const nextIdx = (idx + 1) % len
+    const randIdx = randomIndex(len, idx)
+
+    const label = document.createElement('span')
+    label.className = 'vaibring-label'
+    label.appendChild(makeLink(HUB_URL, '⟡ ' + LABEL))
+
+    widget.appendChild(label)
+    widget.appendChild(makeSep())
+    widget.appendChild(makeLink(sites[prevIdx].url, '← prev', sites[prevIdx].name))
+    widget.appendChild(makeSep())
+    widget.appendChild(makeLink(sites[randIdx].url, 'random', 'Visit a random site'))
+    widget.appendChild(makeSep())
+    widget.appendChild(makeLink(sites[nextIdx].url, 'next →', sites[nextIdx].name))
+  }
+
+  // ── Fetch & go ─────────────────────────────────────────────
+
+  fetch(RING_URL, { cache: 'no-cache' })
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status)
+      return res.json()
+    })
+    .then(function (data) {
+      // Validate: must be a non-empty array of objects with url
+      if (!Array.isArray(data)) throw new Error('Invalid ring data')
+      const valid = data.filter(
+        (s) => s && typeof s.url === 'string' && s.url.trim() !== ''
+      )
+      render(valid)
+    })
+    .catch(function (err) {
+      console.warn('[vaibring] Failed to load ring:', err)
+      widget.setAttribute('data-state', 'error')
+      widget.textContent = 'ring unavailable'
+    })
+})()

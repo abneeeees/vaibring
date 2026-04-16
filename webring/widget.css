@@ -1,0 +1,123 @@
+/* ============================================================
+   vaibring widget — embeddable webring navigation
+   Minimal by default. Retro/hacker theme via data-theme="retro".
+   ============================================================ */
+
+/* --- Reset & host isolation --- */
+.vaibring-widget *,
+.vaibring-widget *::before,
+.vaibring-widget *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- Base (minimal / light) --- */
+.vaibring-widget {
+  --vb-font: 'Courier New', 'Courier', monospace;
+  --vb-bg: #fafafa;
+  --vb-border: #d0d0d0;
+  --vb-text: #333;
+  --vb-link: #555;
+  --vb-link-hover: #000;
+  --vb-accent: #888;
+  --vb-radius: 6px;
+  --vb-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --vb-transition: 0.15s ease;
+
+  font-family: var(--vb-font);
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--vb-text);
+  background: var(--vb-bg);
+  border: 1px solid var(--vb-border);
+  border-radius: var(--vb-radius);
+  box-shadow: var(--vb-shadow);
+  padding: 10px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* --- Retro / hacker theme --- */
+.vaibring-widget[data-theme="retro"] {
+  --vb-bg: #0a0a0a;
+  --vb-border: #2a2a2a;
+  --vb-text: #b0b0b0;
+  --vb-link: #00cc66;
+  --vb-link-hover: #00ff88;
+  --vb-accent: #00cc66;
+  --vb-shadow: 0 0 8px rgba(0, 204, 102, 0.12);
+}
+
+/* --- Dark theme --- */
+.vaibring-widget[data-theme="dark"] {
+  --vb-bg: #1a1a2e;
+  --vb-border: #2d2d44;
+  --vb-text: #c0c0d0;
+  --vb-link: #a78bfa;
+  --vb-link-hover: #c4b5fd;
+  --vb-accent: #a78bfa;
+  --vb-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Navigation links --- */
+.vaibring-widget a {
+  color: var(--vb-link);
+  text-decoration: none;
+  transition: color var(--vb-transition), opacity var(--vb-transition);
+  white-space: nowrap;
+}
+
+.vaibring-widget a:hover,
+.vaibring-widget a:focus-visible {
+  color: var(--vb-link-hover);
+  text-decoration: underline;
+  outline: none;
+}
+
+/* --- Separator --- */
+.vaibring-sep {
+  color: var(--vb-accent);
+  opacity: 0.5;
+  user-select: none;
+}
+
+/* --- Ring label --- */
+.vaibring-label {
+  color: var(--vb-accent);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: lowercase;
+  white-space: nowrap;
+}
+
+.vaibring-label a {
+  color: inherit;
+}
+
+.vaibring-label a:hover {
+  color: var(--vb-link-hover);
+}
+
+/* --- Error / loading states --- */
+.vaibring-widget[data-state="loading"] {
+  opacity: 0.6;
+}
+
+.vaibring-widget[data-state="error"] {
+  opacity: 0.5;
+  font-style: italic;
+}
+
+/* --- Responsive --- */
+@media (max-width: 400px) {
+  .vaibring-widget {
+    font-size: 12px;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+}
