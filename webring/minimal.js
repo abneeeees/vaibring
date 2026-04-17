@@ -53,27 +53,47 @@
   function normalise(url) {
     try {
       const u = new URL(url)
-      return (u.host.replace(/^www\./, '') + u.pathname)
-        .toLowerCase()
-        .replace(/\/+$/, '')
+      const host = u.host.replace(/^www\./, '').toLowerCase()
+      let path = u.pathname.replace(/\/index\.html$/i, '').replace(/\/+$/, '')
+      return (host + path).toLowerCase()
     } catch {
-      return url.toLowerCase().replace(/\/+$/, '')
+      return String(url).toLowerCase().replace(/\/+$/, '')
     }
+  }
+
+  function entryNorms(s) {
+    var norms = [normalise(s.url)]
+    if (Array.isArray(s.aliases)) {
+      s.aliases.forEach(function (a) {
+        if (typeof a === 'string' && a.trim()) norms.push(normalise(a.trim()))
+      })
+    }
+    return norms
   }
 
   function findCurrent(sites) {
     const here = normalise(window.location.href)
-    let idx = sites.findIndex((s) => normalise(s.url) === here)
+    let idx = sites.findIndex(function (s) {
+      return entryNorms(s).indexOf(here) !== -1
+    })
     if (idx === -1) {
       const hereHost = new URL(window.location.href).host
         .replace(/^www\./, '')
         .toLowerCase()
-      idx = sites.findIndex((s) => {
+      idx = sites.findIndex(function (s) {
         try {
-          return new URL(s.url).host.replace(/^www\./, '').toLowerCase() === hereHost
-        } catch {
-          return false
+          if (new URL(s.url).host.replace(/^www\./, '').toLowerCase() === hereHost) return true
+        } catch (e) {}
+        if (Array.isArray(s.aliases)) {
+          return s.aliases.some(function (a) {
+            try {
+              return typeof a === 'string' && new URL(a).host.replace(/^www\./, '').toLowerCase() === hereHost
+            } catch (e) {
+              return false
+            }
+          })
         }
+        return false
       })
     }
     return idx
@@ -93,6 +113,18 @@
     el.setAttribute('href', href)
     el.setAttribute('rel', 'noopener')
     if (title) el.setAttribute('title', title)
+  }
+
+  function guardPlaceholderNav(e) {
+    var h = e.currentTarget.getAttribute('href')
+    if (!h || h === '#') e.preventDefault()
+  }
+
+  function attachPlaceholderGuards() {
+    ;[SEL_PREV, SEL_NEXT, SEL_RANDOM].forEach(function (sel) {
+      var el = document.querySelector(sel)
+      if (el) el.addEventListener('click', guardPlaceholderNav)
+    })
   }
 
   function apply(sites) {
@@ -132,6 +164,7 @@
   }
 
   function run() {
+    attachPlaceholderGuards()
     fetch(FETCH_RING_URL, { cache: 'no-cache', mode: 'cors' })
       .then(function (res) {
         if (!res.ok) throw new Error('HTTP ' + res.status)

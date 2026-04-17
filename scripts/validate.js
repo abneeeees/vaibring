@@ -122,6 +122,35 @@ sites.forEach((site, i) => {
     seenUrls.add(normUrl)
   }
 
+  // aliases (optional) — same site on another URL (e.g. github.io vs custom domain)
+  if (site.aliases !== undefined) {
+    if (!Array.isArray(site.aliases)) {
+      error(`${prefix} "aliases" must be an array`)
+    } else {
+      site.aliases.forEach((alias, j) => {
+        if (typeof alias !== 'string' || alias.trim() === '') {
+          error(`${prefix} aliases[${j}] must be a non-empty string`)
+          return
+        }
+        let ap
+        try {
+          ap = new URL(alias)
+        } catch {
+          error(`${prefix} Invalid alias URL: "${alias}"`)
+          return
+        }
+        if (ap.protocol !== 'https:') {
+          error(`${prefix} Alias must use HTTPS: "${alias}"`)
+        }
+        const normAlias = ap.host.replace(/^www\./, '') + ap.pathname.replace(/\/+$/, '')
+        if (seenUrls.has(normAlias)) {
+          error(`${prefix} Duplicate URL (alias matches another entry): "${alias}"`)
+        }
+        seenUrls.add(normAlias)
+      })
+    }
+  }
+
   // description (optional)
   if (site.description !== undefined) {
     if (typeof site.description !== 'string') {
@@ -132,7 +161,7 @@ sites.forEach((site, i) => {
   }
 
   // Warn about unknown fields
-  const knownFields = new Set(['name', 'url', 'description'])
+  const knownFields = new Set(['name', 'url', 'description', 'aliases'])
   Object.keys(site).forEach((key) => {
     if (!knownFields.has(key)) {
       warn(`${prefix} Unknown field: "${key}" (will be ignored)`)

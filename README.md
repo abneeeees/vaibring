@@ -2,7 +2,7 @@
 
 A small webring for sites with real ball knowledge: good design, honest pages, no filler. PRs welcome; [Vaibhav](https://github.com/v8v88v8v88) curates what lands in the ring.
 
-**[→ vaibring hub](https://v8v88v8v88.github.io/vaibring)**
+**[→ vaibring hub](https://v8v88v8v88.com/vaibring)**
 
 ---
 

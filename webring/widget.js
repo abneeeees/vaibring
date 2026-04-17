@@ -53,7 +53,7 @@
 
   const THEME = SCRIPT.getAttribute('data-theme') || ''
   const LABEL = SCRIPT.getAttribute('data-label') || 'vaibring'
-  const HUB_URL = SCRIPT.getAttribute('data-hub') || 'https://v8v88v8v88.github.io/vaibring'
+  const HUB_URL = SCRIPT.getAttribute('data-hub') || 'https://v8v88v8v88.com/vaibring'
 
   // ── Inject CSS (once) ──────────────────────────────────────
 
@@ -81,17 +81,17 @@
   // ── Helpers ────────────────────────────────────────────────
 
   /**
-   * Normalise a URL for comparison: strip protocol, trailing slash,
-   * www prefix, and lowercase.
+   * Normalise a URL for comparison: host, path without /index.html, no trailing slash,
+   * lowercase (so /vaibring and /vaibring/ and /vaibring/index.html match the ring entry).
    */
   function normalise(url) {
     try {
       const u = new URL(url)
-      return (u.host.replace(/^www\./, '') + u.pathname)
-        .toLowerCase()
-        .replace(/\/+$/, '')
+      const host = u.host.replace(/^www\./, '').toLowerCase()
+      let path = u.pathname.replace(/\/index\.html$/i, '').replace(/\/+$/, '')
+      return (host + path).toLowerCase()
     } catch {
-      return url.toLowerCase().replace(/\/+$/, '')
+      return String(url).toLowerCase().replace(/\/+$/, '')
     }
   }
 
@@ -99,18 +99,37 @@
    * Find the index of the current page's site in the ring.
    * Returns -1 if not found.
    */
+  function entryNorms(s) {
+    const norms = [normalise(s.url)]
+    if (Array.isArray(s.aliases)) {
+      s.aliases.forEach((a) => {
+        if (typeof a === 'string' && a.trim()) norms.push(normalise(a.trim()))
+      })
+    }
+    return norms
+  }
+
   function findCurrent(sites) {
     const here = normalise(window.location.href)
-    // Try exact host+path match first, then host-only match
-    let idx = sites.findIndex((s) => normalise(s.url) === here)
+    let idx = sites.findIndex((s) => entryNorms(s).includes(here))
     if (idx === -1) {
       const hereHost = new URL(window.location.href).host.replace(/^www\./, '').toLowerCase()
       idx = sites.findIndex((s) => {
         try {
-          return new URL(s.url).host.replace(/^www\./, '').toLowerCase() === hereHost
+          if (new URL(s.url).host.replace(/^www\./, '').toLowerCase() === hereHost) return true
         } catch {
-          return false
+          /* ignore */
         }
+        if (Array.isArray(s.aliases)) {
+          return s.aliases.some((a) => {
+            try {
+              return typeof a === 'string' && new URL(a).host.replace(/^www\./, '').toLowerCase() === hereHost
+            } catch {
+              return false
+            }
+          })
+        }
+        return false
       })
     }
     return idx
