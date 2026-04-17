@@ -1,6 +1,6 @@
 # Vaibring
 
-A curated webring for friends of [Vaibhav](https://github.com/v8v88v8v88) and sites that share his wavelength. Got the ball knowledge? You might belong here.
+A small webring for sites with real ball knowledge: good design, honest pages, no filler. PRs welcome; [Vaibhav](https://github.com/v8v88v8v88) curates what lands in the ring.
 
 **[→ vaibring hub](https://v8v88v8v88.github.io/vaibring)**
 
@@ -10,12 +10,12 @@ A curated webring for friends of [Vaibhav](https://github.com/v8v88v8v88) and si
 
 [Webrings](https://en.wikipedia.org/wiki/Webring) were a way for small websites to link to each other in a loop, helping visitors discover new sites. They were everywhere in the 90s, then disappeared when search engines and social media took over.
 
-vaibring brings the idea back - as a curated ring for Vaibhav's friends and people aligned with his ideas:
+vaibring brings the idea back as a tight, curated loop:
 
 - **No backend.** The ring is a single JSON file served from GitHub Pages.
 - **No build step.** The widget is vanilla JS + CSS. Drop in one `<script>` tag.
 - **No dependencies.** Zero npm packages. Zero frameworks.
-- **Curated, not open-directory.** Anyone can submit a PR, but Vaibhav decides what gets merged. If he vibes with your site, you're in.
+- **Curated.** Anyone can open a PR; the maintainer merges sites that fit the ring.
 
 ## Quick start
 
@@ -34,10 +34,10 @@ That's it. The widget renders inline and shows **← prev | random | next →** 
 
 ### 2. Join the ring
 
-This ring is primarily for friends of Vaibhav and sites aligned with his ideas - but it's open to anyone. Submit a PR and if Vaibhav likes your site, it gets merged.
+Submit a pull request when your entry is ready. Merges are reviewed; not every submission is accepted.
 
-1. Fork this repo
-2. Add your site to `webring/sites.json`:
+1. Fork this repository.
+2. Add your site to `webring/sites.json` in your fork:
 
    ```json
    {
@@ -47,9 +47,9 @@ This ring is primarily for friends of Vaibhav and sites aligned with his ideas -
    }
    ```
 
-3. Open a Pull Request
-4. CI validates your entry automatically
-5. Vaibhav reviews it, if your site's got the vibe, you're in.
+3. Add the widget or `minimal.js` navigation on your live site (required before merge).
+4. Open a pull request against this repository. Continuous integration validates `sites.json` and related checks.
+5. After the pull request is merged, your site is included in the ring.
 
 ## Widget themes
 
@@ -69,6 +69,21 @@ This ring is primarily for friends of Vaibhav and sites aligned with his ideas -
 | `data-label`   |          | `"vaibring"` | Custom ring name in the widget       |
 | `data-hub`     |          | *(auto)*     | URL the ring name links to           |
 
+### Custom links
+
+Use `minimal.js` instead of the widget when you want your own HTML/CSS. Add three `<a>` tags with `data-vaibring="prev"`, `"random"`, `"next"`, then load the script after them. It fills `href` from `sites.json` (same logic as `widget.js`). Optional: `data-prev`, `data-next`, `data-random` on the script for custom CSS selectors.
+
+```html
+<a data-vaibring="prev" href="#">←</a>
+<a data-vaibring="random" href="#">random</a>
+<a data-vaibring="next" href="#">→</a>
+<script
+  src="https://v8v88v8v88.github.io/vaibring/webring/minimal.js"
+  data-ring="https://v8v88v8v88.github.io/vaibring/webring/sites.json"
+  async
+></script>
+```
+
 ## Project structure
 
 ```
@@ -77,6 +92,7 @@ vaibring/
 ├── webring/
 │   ├── sites.json              # The ring registry
 │   ├── widget.js               # Embeddable widget script
+│   ├── minimal.js              # Same ring logic, only sets your link hrefs
 │   └── widget.css              # Widget styles (auto-loaded by widget.js)
 ├── scripts/
 │   └── validate.js             # CI validation for sites.json
@@ -94,11 +110,7 @@ vaibring/
 
 1. **Registry** - `webring/sites.json` is a flat JSON array of `{ name, url, description }` objects. The order defines the ring.
 
-2. **Widget** - `widget.js` is a self-contained IIFE. When loaded, it:
-   - Injects the CSS automatically
-   - Fetches the ring data
-   - Matches the current page's URL against the ring
-   - Renders prev / random / next links as a circular loop
+2. **Widget or minimal** - `widget.js` and `minimal.js` are self-contained IIFEs. When loaded, they fetch the ring data, match the current page URL against the ring, and resolve prev / random / next as a circular loop. The widget injects CSS and UI; `minimal.js` only updates `href` on elements you mark up yourself.
 
 3. **Hub** - `index.html` is the landing page showing the full directory, widget demos, embed instructions, and join flow. Supports light and dark mode.
 
@@ -127,7 +139,7 @@ Everything runs as static files - deploy anywhere (GitHub Pages, Netlify, Cloudf
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
-**Note:** PRs are merged at Vaibhav's discretion. This is a curated collection, not an open directory.
+**Note:** Curated collection, not an open directory.
 
 ## License
 

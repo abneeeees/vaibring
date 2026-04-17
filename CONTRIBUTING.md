@@ -1,13 +1,11 @@
 # Contributing to vaibring
 
-vaibring is a curated webring for friends of [Vaibhav](https://github.com/v8v88v8v88) and sites that share his wavelength. It's open for anyone to submit - but PRs are merged at Vaibhav's discretion.
-
-Got the ball knowledge? Here's how to join.
+vaibring is a curated webring for solid personal sites and indie pages. Anyone can submit a PR; merges are at the curator’s discretion ([Vaibhav](https://github.com/v8v88v8v88)).
 
 ## Adding your site
 
-1. **Fork** this repo.
-2. **Edit** `webring/sites.json` - add your entry to the end of the array:
+1. **Fork** this repository on GitHub.
+2. **Edit** `webring/sites.json` in your fork and append an entry for your site:
 
    ```json
    {
@@ -17,7 +15,7 @@ Got the ball knowledge? Here's how to join.
    }
    ```
 
-3. **Add the widget** to your site so visitors can navigate the ring:
+3. **Add webring navigation** on your public site before opening the pull request: either embed the **widget** or use **minimal.js** with your own markup (see `webring/minimal.js` and [README.md](README.md#custom-links)).
 
    ```html
    <script
@@ -28,12 +26,12 @@ Got the ball knowledge? Here's how to join.
    ></script>
    ```
 
-4. **Open a Pull Request.** CI will automatically validate your entry.
-5. **Vaibhav reviews it.** If your site vibes - you're in.
+4. **Open a pull request** against the upstream repository. Continuous integration validates `sites.json` and related checks.
+5. **After merge**, your site is included in the ring.
 
 ## Will my site get accepted?
 
-This isn't a free-for-all directory. vaibring is curated. Vaibhav will look at your site and decide if it fits the ring. Sites that tend to do well:
+This isn't a free-for-all directory. The curator merges sites that fit. Sites that tend to do well:
 
 - Personal sites, blogs, and portfolios of friends or like-minded people
 - Indie projects and hacker-style pages
@@ -50,7 +48,7 @@ Things that won't make it:
 - Your site must use **HTTPS**.
 - Keep your description short (under 200 characters).
 - One site per person (unless you have genuinely distinct sites).
-- You must add the vaibring widget to your site.
+- You must add ring navigation (the widget **or** `minimal.js` with prev / random / next links).
 
 ## Widget options
 
@@ -60,6 +58,8 @@ Things that won't make it:
 | `data-theme`   | *(none)*     | `"retro"`, `"dark"`, or omit for light |
 | `data-label`   | `"vaibring"` | Custom label shown in the widget  |
 | `data-hub`     | *(auto)*     | Link for the ring name            |
+
+**minimal.js** — same `data-ring` as the widget. Mark elements with `data-vaibring="prev"`, `"random"`, `"next"`, or pass `data-prev` / `data-next` / `data-random` (CSS selectors). See the main README.
 
 ## Reporting issues
 

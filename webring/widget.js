@@ -190,7 +190,7 @@
 
     const label = document.createElement('span')
     label.className = 'vaibring-label'
-    label.appendChild(makeLink(HUB_URL, '⟡ ' + LABEL))
+    label.appendChild(makeLabelLink(HUB_URL, LABEL))
 
     widget.appendChild(label)
     widget.appendChild(makeSep())

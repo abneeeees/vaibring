@@ -1,15 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" data-mode="dark">
+<html lang="en" data-mode="light">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>vaibring, a webring for friends of vaibhav &amp; kindred sites</title>
+  <title>vaibring</title>
   <meta name="description"
-    content="A curated webring for friends of Vaibhav and sites aligned with his ideas. Got the ball knowledge? Join the ring.">
-  <meta name="theme-color" content="#0c0c10">
-  <link rel="icon"
-    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⟡</text></svg>">
+    content="Curated webring — sites on a similar wavelength. Open to anyone; prev/next/random navigation.">
+  <meta name="theme-color" content="#f8f8fa">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2322c55e%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%2212%22%20rx%3D%224%22%20ry%3D%2210%22%2F%3E%3Cline%20x1%3D%222%22%20y1%3D%2212%22%20x2%3D%2222%22%20y2%3D%2212%22%2F%3E%3Cpath%20d%3D%22M4.93%206.5h14.14%22%2F%3E%3Cpath%20d%3D%22M4.93%2017.5h14.14%22%2F%3E%3C%2Fsvg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -25,8 +24,27 @@
       padding: 0;
     }
 
-    /* ── Dark mode tokens ─────────────────────── */
-    :root,
+    :root {
+      --bg: #f8f8fa;
+      --bg-raised: #f0f0f4;
+      --bg-card: #ffffff;
+      --border: #dcdce4;
+      --border-hover: #b8b8c4;
+      --text: #1a1a2e;
+      --text-secondary: #4a4a5e;
+      --text-muted: #7a7a8e;
+      --accent: #16a34a;
+      --accent-soft: rgba(22, 163, 74, 0.08);
+      --accent-glow: rgba(22, 163, 74, 0.03);
+      --accent-hover: #15803d;
+      --btn-secondary-bg: #ffffff;
+      --btn-secondary-text: #1a1a2e;
+      --purple: #7c3aed;
+      --amber: #d97706;
+      --heading: #0f0f1a;
+      --glow-opacity: 0.5;
+    }
+
     [data-mode="dark"] {
       --bg: #0c0c10;
       --bg-raised: #14141a;
@@ -46,28 +64,6 @@
       --amber: #f59e0b;
       --heading: #ffffff;
       --glow-opacity: 1;
-    }
-
-    /* ── Light mode tokens ────────────────────── */
-    [data-mode="light"] {
-      --bg: #f8f8fa;
-      --bg-raised: #f0f0f4;
-      --bg-card: #ffffff;
-      --border: #dcdce4;
-      --border-hover: #b8b8c4;
-      --text: #1a1a2e;
-      --text-secondary: #4a4a5e;
-      --text-muted: #7a7a8e;
-      --accent: #16a34a;
-      --accent-soft: rgba(22, 163, 74, 0.08);
-      --accent-glow: rgba(22, 163, 74, 0.03);
-      --accent-hover: #15803d;
-      --btn-secondary-bg: #ffffff;
-      --btn-secondary-text: #1a1a2e;
-      --purple: #7c3aed;
-      --amber: #d97706;
-      --heading: #0f0f1a;
-      --glow-opacity: 0.5;
     }
 
     html {
@@ -211,6 +207,24 @@
       animation: ring-spin-reverse 20s linear infinite;
     }
 
+    .inline-globe {
+      display: inline-block;
+      vertical-align: -0.2em;
+      width: 1em;
+      height: 1em;
+      margin-left: 2px;
+      color: var(--accent);
+    }
+
+    .inline-globe svg {
+      width: 100%;
+      height: 100%;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.5;
+      stroke-linecap: round;
+    }
+
     @keyframes ring-spin-reverse {
       from {
         transform: rotate(0deg);
@@ -345,6 +359,11 @@
       background: var(--accent-glow);
     }
 
+    .site-item.muted {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
     .site-index {
       font-family: 'JetBrains Mono', monospace;
       color: var(--text-muted);
@@ -396,6 +415,10 @@
     }
 
     /* ── Code block ────────────────────────────── */
+    .code-block.code-sample {
+      margin-top: 10px;
+    }
+
     .code-block {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -450,9 +473,11 @@
     /* ── Steps ─────────────────────────────────── */
     .steps {
       list-style: none;
+      counter-reset: join-step;
     }
 
     .steps li {
+      counter-increment: join-step;
       padding: 12px 0 12px 44px;
       position: relative;
       color: var(--text-secondary);
@@ -461,7 +486,7 @@
     }
 
     .steps li::before {
-      content: attr(data-step);
+      content: counter(join-step, decimal-leading-zero);
       position: absolute;
       left: -16px;
       top: 12px;
@@ -470,11 +495,10 @@
       background: var(--bg);
       border: 2px solid var(--accent);
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: grid;
+      place-items: center;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--accent);
     }
@@ -578,22 +602,9 @@
 </head>
 
 <body>
-  <!-- Theme toggle -->
-  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode" aria-label="Toggle theme">
-    <span class="theme-icon-light"><svg viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="5" />
-        <line x1="12" y1="1" x2="12" y2="3" />
-        <line x1="12" y1="21" x2="12" y2="23" />
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-        <line x1="1" y1="12" x2="3" y2="12" />
-        <line x1="21" y1="12" x2="23" y2="12" />
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-      </svg></span>
-    <span class="theme-icon-dark"><svg viewBox="0 0 24 24">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-      </svg></span>
+  <button type="button" class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">
+    <span class="theme-icon-light"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
+    <span class="theme-icon-dark"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
   </button>
 
   <div class="container">
@@ -609,33 +620,31 @@
         </svg>
       </div>
       <h1>vaibring</h1>
-      <p class="hero-tagline">A curated webring for friends of Vaibhav and sites that share his wavelength.</p>
-      <p class="hero-subtitle">Still open to anyone, if Vaibhav vibes with your site, you're in.</p>
+      <p class="hero-tagline">A curated webring for sites on a similar wavelength.</p>
+      <p class="hero-subtitle">Still open to anyone, if Vaibhav vibes with your site, you’re in.</p>
       <div class="hero-actions">
         <a href="#join" class="btn btn-primary">Join the ring</a>
         <a href="https://github.com/v8v88v8v88/vaibring" class="btn">GitHub ↗</a>
       </div>
     </header>
 
-    <!-- The Ring -->
     <section id="ring">
       <div class="section-header">
         <span class="num">01</span>
         <h2>The ring</h2>
       </div>
-      <p>Sites run by friends of Vaibhav and people who've got the ball knowledge. Each one hand-picked.</p>
+      <p>Members appear in ring order, as defined in <code>sites.json</code> (the list wraps from last back to first).</p>
       <ul class="site-list" id="site-list">
-        <li class="site-item" style="color: var(--text-muted); font-style: italic;">loading sites…</li>
+        <li class="site-item muted">loading sites…</li>
       </ul>
     </section>
 
-    <!-- Widget preview -->
     <section id="widget">
       <div class="section-header">
         <span class="num">02</span>
         <h2>Widget preview</h2>
       </div>
-      <p>The embeddable widget that goes on your site. Comes in three themes:</p>
+      <p>Preview of the embeddable navigation bar. Available themes:</p>
       <div class="demo-grid">
         <div class="demo-item">
           <div class="demo-label">retro</div>
@@ -652,13 +661,12 @@
       </div>
     </section>
 
-    <!-- Embed -->
     <section id="embed">
       <div class="section-header">
         <span class="num">03</span>
         <h2>Embed the widget</h2>
       </div>
-      <p>Add one line to your site. That's it.</p>
+      <p>Add a single <code>script</code> element to your page, for example:</p>
       <div class="code-block" id="embed-code"><button class="copy-btn" onclick="copyEmbed()">copy</button><span
           class="hl-comment">&lt;!-- vaibring widget --&gt;</span>
         <span class="hl-tag">&lt;script</span>
@@ -671,60 +679,87 @@
         <span class="hl-tag">&gt;&lt;/script&gt;</span>
       </div>
       <p class="theme-info">
-        Themes: <code>retro</code> <code>dark</code> or omit for light.
-        Use <code>data-label</code> to change the ring name.
+        Set <code>data-theme</code> to <code>retro</code> or <code>dark</code>, or omit it for the default light theme.
+        Use <code>data-label</code> to change the text shown for the ring name.
       </p>
     </section>
 
-    <!-- Join -->
-    <section id="join">
+    <section id="embed-minimal">
       <div class="section-header">
         <span class="num">04</span>
+        <h2>Custom links</h2>
+      </div>
+      <p>To use your own layout and styles, add three anchor elements and include <code>minimal.js</code>. The script
+        loads the ring data and sets each link’s destination; you supply the markup and CSS.</p>
+      <div class="code-block" id="embed-minimal-code"><button class="copy-btn" onclick="copyEmbedMinimal()">copy</button><span
+          class="hl-comment">&lt;!-- your markup --&gt;</span>
+        <span class="hl-tag">&lt;a</span> <span class="hl-attr">data-vaibring</span>=<span
+          class="hl-str">"prev"</span> <span class="hl-attr">href</span>=<span class="hl-str">"#"</span><span
+          class="hl-tag">&gt;</span>←<span class="hl-tag">&lt;/a&gt;</span>
+        <span class="hl-tag">&lt;a</span> <span class="hl-attr">data-vaibring</span>=<span
+          class="hl-str">"random"</span> <span class="hl-attr">href</span>=<span class="hl-str">"#"</span><span
+          class="hl-tag">&gt;</span>random<span class="hl-tag">&lt;/a&gt;</span>
+        <span class="hl-tag">&lt;a</span> <span class="hl-attr">data-vaibring</span>=<span
+          class="hl-str">"next"</span> <span class="hl-attr">href</span>=<span class="hl-str">"#"</span><span
+          class="hl-tag">&gt;</span>→<span class="hl-tag">&lt;/a&gt;</span>
+        <span class="hl-tag">&lt;script</span>
+        <span class="hl-attr">src</span>=<span
+          class="hl-str">"https://v8v88v8v88.github.io/vaibring/webring/minimal.js"</span>
+        <span class="hl-attr">data-ring</span>=<span
+          class="hl-str">"https://v8v88v8v88.github.io/vaibring/webring/sites.json"</span>
+        <span class="hl-attr">async</span>
+        <span class="hl-tag">&gt;&lt;/script&gt;</span>
+      </div>
+    </section>
+
+    <section id="join">
+      <div class="section-header">
+        <span class="num">05</span>
         <h2>Join the ring</h2>
       </div>
-      <p>This ring is primarily for friends of Vaibhav and sites aligned with his ideas, but it's open to anyone.
-        Submit a PR and if Vaibhav likes your site, you're in.</p>
+      <p>Complete each step in order. Pull requests are reviewed before merge.</p>
       <ol class="steps">
-        <li data-step="1">Fork the <a href="https://github.com/v8v88v8v88/vaibring">vaibring repo</a> on GitHub.</li>
-        <li data-step="2">Edit <code>webring/sites.json</code>, add your site:
-          <div class="code-block" style="margin-top: 10px; white-space: pre;">{
+        <li>Fork the <a href="https://github.com/v8v88v8v88/vaibring">vaibring</a> repository on GitHub.</li>
+        <li>In your fork, edit <code>webring/sites.json</code> and append an object for your site using this shape:
+          <div class="code-block code-sample" style="white-space: pre;">{
             <span class="hl-attr">"name"</span>: <span class="hl-str">"your site"</span>,
             <span class="hl-attr">"url"</span>: <span class="hl-str">"https://yoursite.com"</span>,
             <span class="hl-attr">"description"</span>: <span class="hl-str">"a short description"</span>
             }
           </div>
         </li>
-        <li data-step="3">Add the widget to your site (see <a href="#embed">embed instructions</a>).</li>
-        <li data-step="4">Open a Pull Request. CI validates your entry automatically.</li>
-        <li data-step="5">Vaibhav reviews it. If your site's got the vibe, you're in the ring. ⟡</li>
+        <li>On your live site, add webring navigation: either the <a href="#embed">widget</a> or <a
+            href="#embed-minimal">custom links</a> via <code>minimal.js</code>, before your pull request is merged.</li>
+        <li>Open a pull request against the upstream repository. Continuous integration validates <code>sites.json</code>
+          and related checks.</li>
+        <li>After your pull request is merged, your site appears in the member list below. <span class="inline-globe"
+            aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4" ry="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M4.93 6.5h14.14"/><path d="M4.93 17.5h14.14"/></svg></span></li>
       </ol>
-      <div class="note">
-        PRs are merged at Vaibhav's discretion. Think of it as a curated collection, not an open directory.
-      </div>
+      <div class="note">Membership is curated. Not every pull request is merged.</div>
     </section>
 
-    <!-- About -->
     <section id="about">
       <div class="section-header">
-        <span class="num">05</span>
+        <span class="num">06</span>
         <h2>About</h2>
       </div>
       <p>
-        Webrings were a thing in the 90s, small sites linking to each other in a loop so visitors could discover new
-        pages. They disappeared when search engines and social media took over.
+        A <strong>webring</strong> is just a circle of websites. Everyone in the list links to who is “before” and
+        “after” them (and usually a random pick). You move around the ring with those links — no feed, no score, only the
+        order people agreed on. It is a simple way to stumble from one personal site to the next.
       </p>
       <p>
-        vaibring brings the concept back as a curated ring for Vaibhav's friends and people who share his ball
-        knowledge. No backend, no build step, no dependencies, just a JSON file on GitHub Pages.
+        <strong>vaibring</strong> is a webring run by <a href="https://github.com/v8v88v8v88">V8</a>. He has always liked
+        webrings, so he set this one up for friends and for like-minded people who want the same small-web vibe.
       </p>
       <p>
-        <a href="https://github.com/v8v88v8v88/vaibring">View source on GitHub →</a>
+        Member sites are listed in <code>webring/sites.json</code>; the hub and widget are static files on GitHub Pages.
+        <a href="https://github.com/v8v88v8v88/vaibring">Source on GitHub →</a>
       </p>
     </section>
 
     <footer>
-      <p>vaibring · <a href="https://github.com/v8v88v8v88/vaibring">source</a> · curated by <a
-          href="https://github.com/v8v88v8v88">vaibhav</a></p>
+      <p>vaibring · <a href="https://github.com/v8v88v8v88/vaibring">source</a> · curated by <a href="https://github.com/v8v88v8v88">vaibhav</a></p>
     </footer>
 
   </div>
@@ -732,7 +767,6 @@
   <link rel="stylesheet" href="webring/widget.css">
 
   <script>
-    // ── Theme toggle ──────────────────────────
     function toggleTheme() {
       const html = document.documentElement;
       const current = html.getAttribute('data-mode');
@@ -741,19 +775,123 @@
       localStorage.setItem('vaibring-theme', next);
     }
 
-    // Restore saved theme
     (function () {
       const saved = localStorage.getItem('vaibring-theme');
       if (saved) document.documentElement.setAttribute('data-mode', saved);
     })();
 
-    // ── Render site list ──────────────────────
+    function esc(str) {
+      const d = document.createElement('div');
+      d.textContent = str;
+      return d.innerHTML;
+    }
+
+    function normalise(url) {
+      try {
+        const u = new URL(url);
+        return (u.host.replace(/^www\./, '') + u.pathname)
+          .toLowerCase()
+          .replace(/\/+$/, '');
+      } catch {
+        return url.toLowerCase().replace(/\/+$/, '');
+      }
+    }
+
+    function findCurrent(sites) {
+      const here = normalise(window.location.href);
+      let idx = sites.findIndex((s) => normalise(s.url) === here);
+      if (idx === -1) {
+        const hereHost = new URL(window.location.href).host.replace(/^www\./, '').toLowerCase();
+        idx = sites.findIndex((s) => {
+          try {
+            return new URL(s.url).host.replace(/^www\./, '').toLowerCase() === hereHost;
+          } catch {
+            return false;
+          }
+        });
+      }
+      return idx;
+    }
+
+    function randomIndex(len, exclude) {
+      if (len <= 1) return 0;
+      let r;
+      do {
+        r = Math.floor(Math.random() * len);
+      } while (r === exclude);
+      return r;
+    }
+
+    function wireWidgetPreviews(sites) {
+      if (!sites.length) return;
+      const idx = findCurrent(sites);
+      const len = sites.length;
+      let prevIdx;
+      let nextIdx;
+      let randIdx;
+      if (idx === -1) {
+        prevIdx = 0;
+        nextIdx = len > 1 ? 1 : 0;
+        randIdx = randomIndex(len, -1);
+      } else {
+        prevIdx = (idx - 1 + len) % len;
+        nextIdx = (idx + 1) % len;
+        randIdx = randomIndex(len, idx);
+      }
+      ['demo-retro', 'demo-dark', 'demo-light'].forEach((id) => {
+        const root = document.getElementById(id);
+        if (!root) return;
+        const w = root.querySelector('.vaibring-widget');
+        if (!w) return;
+        const prev = w.querySelector('[data-wb="prev"]');
+        const rnd = w.querySelector('[data-wb="random"]');
+        const next = w.querySelector('[data-wb="next"]');
+        if (prev) {
+          prev.href = sites[prevIdx].url;
+          prev.title = sites[prevIdx].name;
+        }
+        if (rnd) {
+          rnd.href = sites[randIdx].url;
+          rnd.title = 'Visit a random site';
+        }
+        if (next) {
+          next.href = sites[nextIdx].url;
+          next.title = sites[nextIdx].name;
+        }
+      });
+    }
+
+    function createDemo(id, theme) {
+      const el = document.getElementById(id);
+      const w = document.createElement('div');
+      w.className = 'vaibring-widget';
+      if (theme) w.setAttribute('data-theme', theme);
+      w.setAttribute('role', 'navigation');
+      w.setAttribute('aria-label', 'vaibring webring preview');
+      w.innerHTML = `
+        <span class="vaibring-label"><a href="./" rel="noopener"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" style="display:inline-block;vertical-align:-2px;margin-right:4px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4" ry="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>vaibring</a></span>
+        <span class="vaibring-sep" aria-hidden="true">|</span>
+        <a data-wb="prev" href="#" rel="noopener">← prev</a>
+        <span class="vaibring-sep" aria-hidden="true">|</span>
+        <a data-wb="random" href="#" rel="noopener">random</a>
+        <span class="vaibring-sep" aria-hidden="true">|</span>
+        <a data-wb="next" href="#" rel="noopener">next →</a>
+      `;
+      el.appendChild(w);
+    }
+    createDemo('demo-retro', 'retro');
+    createDemo('demo-dark', 'dark');
+    createDemo('demo-light', '');
+
     fetch('webring/sites.json')
-      .then(r => r.json())
-      .then(sites => {
+      .then((r) => r.json())
+      .then((sites) => {
+        const valid = Array.isArray(sites)
+          ? sites.filter((s) => s && typeof s.url === 'string' && s.url.trim() !== '')
+          : [];
         const list = document.getElementById('site-list');
         list.innerHTML = '';
-        sites.forEach((site, i) => {
+        valid.forEach((site, i) => {
           const li = document.createElement('li');
           li.className = 'site-item';
           li.innerHTML = `
@@ -763,45 +901,26 @@
           `;
           list.appendChild(li);
         });
+        wireWidgetPreviews(valid);
       })
       .catch(() => {
         document.getElementById('site-list').innerHTML =
-          '<li class="site-item" style="color:var(--text-muted);font-style:italic;">could not load sites</li>';
+          '<li class="site-item muted">could not load sites</li>';
       });
 
-    function esc(str) {
-      const d = document.createElement('div');
-      d.textContent = str;
-      return d.innerHTML;
-    }
-
-    // ── Widget demos ──────────────────────────
-    function createDemo(id, theme) {
-      const el = document.getElementById(id);
-      const w = document.createElement('div');
-      w.className = 'vaibring-widget';
-      if (theme) w.setAttribute('data-theme', theme);
-      w.setAttribute('role', 'navigation');
-      w.innerHTML = `
-        <span class="vaibring-label"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" style="display:inline-block;vertical-align:-2px;margin-right:4px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round"><circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4" ry="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>vaibring</span>
-        <span class="vaibring-sep" aria-hidden="true">|</span>
-        <a href="#">← prev</a>
-        <span class="vaibring-sep" aria-hidden="true">|</span>
-        <a href="#">random</a>
-        <span class="vaibring-sep" aria-hidden="true">|</span>
-        <a href="#">next →</a>
-      `;
-      el.appendChild(w);
-    }
-    createDemo('demo-retro', 'retro');
-    createDemo('demo-dark', 'dark');
-    createDemo('demo-light', '');
-
-    // ── Copy embed ────────────────────────────
     function copyEmbed() {
       const code = `<!-- vaibring widget -->\n<script\n  src="https://v8v88v8v88.github.io/vaibring/webring/widget.js"\n  data-ring="https://v8v88v8v88.github.io/vaibring/webring/sites.json"\n  data-theme="retro"\n  async\n><\/script>`;
       navigator.clipboard.writeText(code).then(() => {
-        const btn = document.querySelector('.copy-btn');
+        const btn = document.querySelector('#embed-code .copy-btn');
+        btn.textContent = 'copied!';
+        setTimeout(() => btn.textContent = 'copy', 1500);
+      });
+    }
+
+    function copyEmbedMinimal() {
+      const code = `<!-- your markup -->\n<a data-vaibring="prev" href="#">←</a>\n<a data-vaibring="random" href="#">random</a>\n<a data-vaibring="next" href="#">→</a>\n<script\n  src="https://v8v88v8v88.github.io/vaibring/webring/minimal.js"\n  data-ring="https://v8v88v8v88.github.io/vaibring/webring/sites.json"\n  async\n><\/script>`;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.querySelector('#embed-minimal-code .copy-btn');
         btn.textContent = 'copied!';
         setTimeout(() => btn.textContent = 'copy', 1500);
       });
