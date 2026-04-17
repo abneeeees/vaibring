@@ -24,13 +24,27 @@ vaibring brings the idea back as a tight, curated loop:
 ```html
 <script
   src="https://v8v88v8v88.github.io/vaibring/webring/widget.js"
-  data-ring="https://v8v88v8v88.github.io/vaibring/webring/sites.json"
+  data-ring="https://cdn.jsdelivr.net/gh/v8v88v8v88/vaibring@main/webring/sites.json"
   data-theme="retro"
   async
 ></script>
 ```
 
-That's it. The widget renders inline and shows **← prev | random | next →** navigation.
+That’s it. The widget renders inline and shows **← prev | random | next →** navigation.
+
+### Ring JSON URL (`data-ring`)
+
+Browsers block cross-origin `fetch()` unless the server sends CORS headers. **GitHub Pages does not add CORS** to static JSON, so embeds on other domains (or `localhost`) would fail if `data-ring` pointed only at `github.io/.../sites.json`.
+
+**Canonical URL:** use jsDelivr (same file as in the repo, CORS-friendly):
+
+`https://cdn.jsdelivr.net/gh/v8v88v8v88/vaibring@main/webring/sites.json`
+
+You do **not** need to copy `sites.json` to your own host. Omit `data-ring` and the scripts default to that URL.
+
+If you still use the old `https://v8v88v8v88.github.io/vaibring/webring/sites.json` value for `data-ring`, the scripts **automatically** fetch that same list via jsDelivr so existing embeds keep working cross-origin.
+
+**Forks:** `https://cdn.jsdelivr.net/gh/YOUR_USER/YOUR_REPO@main/webring/sites.json`
 
 ### 2. Join the ring
 
@@ -64,7 +78,7 @@ Submit a pull request when your entry is ready. Merges are reviewed; not every s
 | Attribute      | Required | Default      | Description                          |
 | -------------- | -------- | ------------ | ------------------------------------ |
 | `src`          | ✓        | -            | URL to `widget.js`                   |
-| `data-ring`    | ✓        | -            | URL to `sites.json`                  |
+| `data-ring`    |          | *(canonical jsDelivr URL)* | URL to `sites.json` (must allow CORS; see above) |
 | `data-theme`   |          | *(light)*    | `"retro"` or `"dark"`                |
 | `data-label`   |          | `"vaibring"` | Custom ring name in the widget       |
 | `data-hub`     |          | *(auto)*     | URL the ring name links to           |
@@ -79,10 +93,16 @@ Use `minimal.js` instead of the widget when you want your own HTML/CSS. Add thre
 <a data-vaibring="next" href="#">→</a>
 <script
   src="https://v8v88v8v88.github.io/vaibring/webring/minimal.js"
-  data-ring="https://v8v88v8v88.github.io/vaibring/webring/sites.json"
+  data-ring="https://cdn.jsdelivr.net/gh/v8v88v8v88/vaibring@main/webring/sites.json"
   async
 ></script>
 ```
+
+### Troubleshooting
+
+- **Links stay `#` or jump to the top of the page** — `minimal.js` / `widget.js` never set `href` because `fetch()` failed. Open DevTools → Network: if `sites.json` is red/blocked, fix `data-ring` (use the jsDelivr URL above). For third-party ring files, the host must send `Access-Control-Allow-Origin` on GET.
+- **Widget shows “ring unavailable”** — same fetch failure or invalid JSON.
+- **Script `src` from `github.io` is fine** — only the JSON request is subject to CORS; loading `widget.js` / `minimal.js` via `<script src>` is not the problem.
 
 ## Project structure
 
@@ -110,7 +130,7 @@ vaibring/
 
 1. **Registry** - `webring/sites.json` is a flat JSON array of `{ name, url, description }` objects. The order defines the ring.
 
-2. **Widget or minimal** - `widget.js` and `minimal.js` are self-contained IIFEs. When loaded, they fetch the ring data, match the current page URL against the ring, and resolve prev / random / next as a circular loop. The widget injects CSS and UI; `minimal.js` only updates `href` on elements you mark up yourself.
+2. **Widget or minimal** - `widget.js` and `minimal.js` are self-contained IIFEs. They `fetch()` the ring JSON from `data-ring` (default: jsDelivr CDN URL so CORS works from any origin), match the current page URL against the ring, and resolve prev / random / next as a circular loop. The widget injects CSS and UI; `minimal.js` only updates `href` on elements you mark up yourself.
 
 3. **Hub** - `index.html` is the landing page showing the full directory, widget demos, embed instructions, and join flow. Supports light and dark mode.
 
@@ -123,17 +143,21 @@ vaibring/
 - **Site not in ring** - Widget still renders with navigation to ring members
 - **Single-site ring** - Prev/next point to the same site; random works
 - **Empty ring** - Shows "ring is empty" message
-- **Fetch failure** - Shows "ring unavailable" gracefully
+- **Fetch failure** - Shows "ring unavailable" (widget) or leaves `#` hrefs (minimal); usually CORS or bad `data-ring` URL
 - **URL normalization** - Strips `www.`, trailing slashes, and protocol for matching
 
 ## Self-hosting
 
-You can fork vaibring and run your own ring. Just update the URLs in:
-- `widget.js` default `RING_URL` constant
-- `index.html` embed examples
-- `README.md` / `CONTRIBUTING.md` instructions
+You can fork vaibring and run your own ring. Update in both `widget.js` and `minimal.js`:
 
-Everything runs as static files - deploy anywhere (GitHub Pages, Netlify, Cloudflare Pages, etc).
+- `VAIBRING_RING_CDN` — your jsDelivr URL: `https://cdn.jsdelivr.net/gh/USER/REPO@main/webring/sites.json`
+- `VAIBRING_RING_PAGES_LEGACY` — optional `github.io` URL for automatic rewrite to the CDN (same as upstream)
+
+Also update embed examples in `index.html`, `README.md`, and `CONTRIBUTING.md`.
+
+Everything runs as static files — deploy anywhere (GitHub Pages, Netlify, Cloudflare Pages, etc).
+
+**GitHub Pages cannot set custom CORS headers** on static JSON; jsDelivr remains the simplest cross-origin-friendly default for `sites.json`.
 
 ## Contributing
 

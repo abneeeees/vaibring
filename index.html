@@ -673,7 +673,7 @@
         <span class="hl-attr">src</span>=<span
           class="hl-str">"https://v8v88v8v88.github.io/vaibring/webring/widget.js"</span>
         <span class="hl-attr">data-ring</span>=<span
-          class="hl-str">"https://v8v88v8v88.github.io/vaibring/webring/sites.json"</span>
+          class="hl-str">"https://cdn.jsdelivr.net/gh/v8v88v8v88/vaibring@main/webring/sites.json"</span>
         <span class="hl-attr">data-theme</span>=<span class="hl-str">"retro"</span>
         <span class="hl-attr">async</span>
         <span class="hl-tag">&gt;&lt;/script&gt;</span>
@@ -682,6 +682,9 @@
         Set <code>data-theme</code> to <code>retro</code> or <code>dark</code>, or omit it for the default light theme.
         Use <code>data-label</code> to change the text shown for the ring name.
       </p>
+      <p class="theme-info"><strong>data-ring:</strong> point at the jsDelivr URL above (same file as in the repo, works
+        with <code>fetch()</code> from any site). You do not need to host <code>sites.json</code> yourself. Omit
+        <code>data-ring</code> and the script uses that URL by default.</p>
     </section>
 
     <section id="embed-minimal">
@@ -706,10 +709,13 @@
         <span class="hl-attr">src</span>=<span
           class="hl-str">"https://v8v88v8v88.github.io/vaibring/webring/minimal.js"</span>
         <span class="hl-attr">data-ring</span>=<span
-          class="hl-str">"https://v8v88v8v88.github.io/vaibring/webring/sites.json"</span>
+          class="hl-str">"https://cdn.jsdelivr.net/gh/v8v88v8v88/vaibring@main/webring/sites.json"</span>
         <span class="hl-attr">async</span>
         <span class="hl-tag">&gt;&lt;/script&gt;</span>
       </div>
+      <p class="theme-info"><strong>Troubleshooting:</strong> if prev/next/random stay <code>href="#"</code>, the ring JSON
+        did not load (often CORS). Use the jsDelivr <code>data-ring</code> URL above; GitHub Pages alone does not send
+        CORS headers on static JSON.</p>
     </section>
 
     <section id="join">
@@ -909,7 +915,7 @@
       });
 
     function copyEmbed() {
-      const code = `<!-- vaibring widget -->\n<script\n  src="https://v8v88v8v88.github.io/vaibring/webring/widget.js"\n  data-ring="https://v8v88v8v88.github.io/vaibring/webring/sites.json"\n  data-theme="retro"\n  async\n><\/script>`;
+      const code = `<!-- vaibring widget -->\n<script\n  src="https://v8v88v8v88.github.io/vaibring/webring/widget.js"\n  data-ring="https://cdn.jsdelivr.net/gh/v8v88v8v88/vaibring@main/webring/sites.json"\n  data-theme="retro"\n  async\n><\/script>`;
       navigator.clipboard.writeText(code).then(() => {
         const btn = document.querySelector('#embed-code .copy-btn');
         btn.textContent = 'copied!';
@@ -918,7 +924,7 @@
     }
 
     function copyEmbedMinimal() {
-      const code = `<!-- your markup -->\n<a data-vaibring="prev" href="#">←</a>\n<a data-vaibring="random" href="#">random</a>\n<a data-vaibring="next" href="#">→</a>\n<script\n  src="https://v8v88v8v88.github.io/vaibring/webring/minimal.js"\n  data-ring="https://v8v88v8v88.github.io/vaibring/webring/sites.json"\n  async\n><\/script>`;
+      const code = `<!-- your markup -->\n<a data-vaibring="prev" href="#">←</a>\n<a data-vaibring="random" href="#">random</a>\n<a data-vaibring="next" href="#">→</a>\n<script\n  src="https://v8v88v8v88.github.io/vaibring/webring/minimal.js"\n  data-ring="https://cdn.jsdelivr.net/gh/v8v88v8v88/vaibring@main/webring/sites.json"\n  async\n><\/script>`;
       navigator.clipboard.writeText(code).then(() => {
         const btn = document.querySelector('#embed-minimal-code .copy-btn');
         btn.textContent = 'copied!';

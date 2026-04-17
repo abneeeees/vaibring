@@ -20,11 +20,13 @@ vaibring is a curated webring for solid personal sites and indie pages. Anyone c
    ```html
    <script
      src="https://v8v88v8v88.github.io/vaibring/webring/widget.js"
-     data-ring="https://v8v88v8v88.github.io/vaibring/webring/sites.json"
+     data-ring="https://cdn.jsdelivr.net/gh/v8v88v8v88/vaibring@main/webring/sites.json"
      data-theme="retro"
      async
    ></script>
    ```
+
+   Use that `data-ring` URL (jsDelivr) so `fetch()` works from any origin; you do not need to host a copy of `sites.json` yourself.
 
 4. **Open a pull request** against the upstream repository. Continuous integration validates `sites.json` and related checks.
 5. **After merge**, your site is included in the ring.
@@ -54,7 +56,7 @@ Things that won't make it:
 
 | Attribute      | Default      | Description                       |
 | -------------- | ------------ | --------------------------------- |
-| `data-ring`    | *(required)* | URL to the `sites.json` file      |
+| `data-ring`    | *(default: canonical jsDelivr URL)* | URL to `sites.json` (must allow CORS; see README) |
 | `data-theme`   | *(none)*     | `"retro"`, `"dark"`, or omit for light |
 | `data-label`   | `"vaibring"` | Custom label shown in the widget  |
 | `data-hub`     | *(auto)*     | Link for the ring name            |

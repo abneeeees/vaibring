@@ -9,7 +9,7 @@
  *   <a data-vaibring="next" href="#">→</a>
  *   <script
  *     src="https://v8v88v8v88.github.io/vaibring/webring/minimal.js"
- *     data-ring="https://v8v88v8v88.github.io/vaibring/webring/sites.json"
+ *     data-ring="https://cdn.jsdelivr.net/gh/v8v88v8v88/vaibring@main/webring/sites.json"
  *     async
  *   ></script>
  *
@@ -22,9 +22,28 @@
   const SCRIPT = document.currentScript
   if (!SCRIPT) return
 
-  const RING_URL =
-    SCRIPT.getAttribute('data-ring') ||
+  const VAIBRING_RING_CDN =
+    'https://cdn.jsdelivr.net/gh/v8v88v8v88/vaibring@main/webring/sites.json'
+  const VAIBRING_RING_PAGES_LEGACY =
     'https://v8v88v8v88.github.io/vaibring/webring/sites.json'
+
+  function resolveRingFetchUrl(requested) {
+    if (!requested || !String(requested).trim()) return VAIBRING_RING_CDN
+    var raw = String(requested).trim()
+    try {
+      var legacy = new URL(VAIBRING_RING_PAGES_LEGACY)
+      var cur = new URL(raw, window.location.href)
+      if (
+        legacy.hostname === cur.hostname &&
+        legacy.pathname.replace(/\/+$/, '') === cur.pathname.replace(/\/+$/, '')
+      ) {
+        return VAIBRING_RING_CDN
+      }
+    } catch (e) {}
+    return raw
+  }
+
+  var FETCH_RING_URL = resolveRingFetchUrl(SCRIPT.getAttribute('data-ring'))
 
   const SEL_PREV = SCRIPT.getAttribute('data-prev') || '[data-vaibring="prev"]'
   const SEL_NEXT = SCRIPT.getAttribute('data-next') || '[data-vaibring="next"]'
@@ -113,7 +132,7 @@
   }
 
   function run() {
-    fetch(RING_URL, { cache: 'no-cache' })
+    fetch(FETCH_RING_URL, { cache: 'no-cache', mode: 'cors' })
       .then(function (res) {
         if (!res.ok) throw new Error('HTTP ' + res.status)
         return res.json()
@@ -126,7 +145,12 @@
         apply(valid)
       })
       .catch(function (err) {
-        console.warn('[vaibring] minimal.js failed to load ring:', err)
+        console.warn(
+          '[vaibring] minimal.js could not load ring JSON from',
+          FETCH_RING_URL,
+          '— prev/next/random links stay as #. Use data-ring with the jsDelivr sites.json URL (see vaibring README); GitHub Pages JSON is often blocked by CORS for cross-origin fetch.',
+          err
+        )
       })
   }
 

@@ -4,7 +4,7 @@
  * Usage:
  *   <script
  *     src="https://v8v88v8v88.github.io/vaibring/webring/widget.js"
- *     data-ring="https://v8v88v8v88.github.io/vaibring/webring/sites.json"
+ *     data-ring="https://cdn.jsdelivr.net/gh/v8v88v8v88/vaibring@main/webring/sites.json"
  *     data-theme="retro"          <!-- optional: "retro" | "dark" | omit for light -->
  *     data-label="vaibring"       <!-- optional: custom ring name -->
  *     async
@@ -23,9 +23,33 @@
   const SCRIPT = document.currentScript
   if (!SCRIPT) return // Edge case: module context or removed script
 
-  const RING_URL =
-    SCRIPT.getAttribute('data-ring') ||
+  /**
+   * Canonical ring JSON on jsDelivr — served with Access-Control-Allow-Origin so
+   * fetch() works from any origin (unlike raw github.io for static JSON).
+   */
+  const VAIBRING_RING_CDN =
+    'https://cdn.jsdelivr.net/gh/v8v88v8v88/vaibring@main/webring/sites.json'
+  /** Legacy default; still rewritten to CDN so old embeds work cross-origin. */
+  const VAIBRING_RING_PAGES_LEGACY =
     'https://v8v88v8v88.github.io/vaibring/webring/sites.json'
+
+  function resolveRingFetchUrl(requested) {
+    if (!requested || !String(requested).trim()) return VAIBRING_RING_CDN
+    var raw = String(requested).trim()
+    try {
+      var legacy = new URL(VAIBRING_RING_PAGES_LEGACY)
+      var cur = new URL(raw, window.location.href)
+      if (
+        legacy.hostname === cur.hostname &&
+        legacy.pathname.replace(/\/+$/, '') === cur.pathname.replace(/\/+$/, '')
+      ) {
+        return VAIBRING_RING_CDN
+      }
+    } catch (e) {}
+    return raw
+  }
+
+  var FETCH_RING_URL = resolveRingFetchUrl(SCRIPT.getAttribute('data-ring'))
 
   const THEME = SCRIPT.getAttribute('data-theme') || ''
   const LABEL = SCRIPT.getAttribute('data-label') || 'vaibring'
@@ -35,7 +59,7 @@
 
   const CSS_ID = 'vaibring-css'
   if (!document.getElementById(CSS_ID)) {
-    const cssUrl = RING_URL.replace(/sites\.json$/, 'widget.css')
+    const cssUrl = FETCH_RING_URL.replace(/sites\.json$/i, 'widget.css')
     const link = document.createElement('link')
     link.id = CSS_ID
     link.rel = 'stylesheet'
@@ -203,7 +227,7 @@
 
   // ── Fetch & go ─────────────────────────────────────────────
 
-  fetch(RING_URL, { cache: 'no-cache' })
+  fetch(FETCH_RING_URL, { cache: 'no-cache', mode: 'cors' })
     .then(function (res) {
       if (!res.ok) throw new Error('HTTP ' + res.status)
       return res.json()
@@ -217,7 +241,12 @@
       render(valid)
     })
     .catch(function (err) {
-      console.warn('[vaibring] Failed to load ring:', err)
+      console.warn(
+        '[vaibring] Could not load ring JSON from',
+        FETCH_RING_URL,
+        '— check Network tab (CORS or blocked request). Use data-ring with the jsDelivr URL from the vaibring README, or ensure your ring file allows cross-origin GET.',
+        err
+      )
       widget.setAttribute('data-state', 'error')
       widget.textContent = 'ring unavailable'
     })
